@@ -2,6 +2,7 @@
 
 ; feel free to modify the score graphics - just keep each digit 8 high
 ; and keep the conditional compilation stuff intact
+ ifnconst DPCplusELF
  ifconst ROM2k
    ORG $F7AC-8
  else
@@ -25,6 +26,7 @@
    else
      ORG $FF9C
    endif
+ endif
  endif
 
 ; font equates
@@ -177,6 +179,7 @@ scoretable
 
  endif
 
+ ifnconst DPCplusELF
  ifconst ROM2k
    ORG $F7FC
  else
@@ -200,4 +203,5 @@ scoretable
    else
      ORG $FFFC
    endif
+ endif
  endif

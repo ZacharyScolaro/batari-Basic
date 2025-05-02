@@ -42,6 +42,7 @@ int macroactive = 0;
 int kernel_options = 0;
 int pfcolorindexsave = 0;
 int pfcolornumber = 0;
+int dpc_elf = 0;
 
 int pfdata[50][256];
 char sprite_data[5000][50];
@@ -93,7 +94,11 @@ void pfclear(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	printf("	lda #(>C_function) & $0F\n");
+	if(dpc_elf) {
+		printf("	lda #>C_function\n");
+	} else {
+		printf("	lda #(>C_function) & $0F\n");
+	}
 	printf("	sta DF0HI\n");
 	printf("	ldx #28\n");
 	printf("	stx DF0WRITE\n");
@@ -193,7 +198,11 @@ void do_stack(char **statement)
     if (isimmed(statement[2])) {
     	printf("	lda #<(STACKbegin+%s)\n", statement[2]);
     	printf("	STA DF7LOW\n");
-    	printf("	lda #(>(STACKbegin+%s)) & $0F\n", statement[2]);
+		if(dpc_elf) {
+    		printf("	lda #(>(STACKbegin+%s))\n", statement[2]);
+		} else {
+    		printf("	lda #(>(STACKbegin+%s)) & $0F\n", statement[2]);
+		}
     	printf("	STA DF7HI\n");
     } else {
         printf("LDA #<STACKbegin\n");
@@ -218,11 +227,20 @@ void bkcolors(char **statement)
 	removeCR(label);
 	printf("	LDA #<BKCOLS\n");
 	printf("	STA DF0LOW\n");
-	printf("	LDA #(>BKCOLS) & $0F\n");
+	if(dpc_elf) {
+		printf("	LDA #(>BKCOLS)\n");
+	} else {
+		printf("	LDA #(>BKCOLS) & $0F\n");
+	}
 	printf("	STA DF0HI\n");
 	printf("	LDA #<%s\n", label);
 	printf("	STA PARAMETER\n");
-	printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
+	if(dpc_elf) {
+		printf("	LDA #>%s\n", label, label);	// DPC+
+	} else {
+		printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
+	}
+	
 	printf("	STA PARAMETER\n");
 	printf("	LDA #0\n");
 	printf("	STA PARAMETER\n");
@@ -380,11 +398,19 @@ void playfieldcolorandheight(char **statement)
 	    removeCR(label);
 	    printf("	LDA #<PFCOLS\n");
 	    printf("	STA DF0LOW\n");
-	    printf("	LDA #(>PFCOLS) & $0F\n");
+		if(dpc_elf) {
+			printf("	LDA #(>PFCOLS)\n");
+		} else {
+			printf("	LDA #(>PFCOLS) & $0F\n");
+		}	    
 	    printf("	STA DF0HI\n");
 	    printf("	LDA #<%s\n", label);
 	    printf("	STA PARAMETER\n");
-	    printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
+		if(dpc_elf) {
+		    printf("	LDA #>%s\n", label, label);	// DPC+
+		} else {
+			printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
+		}
 	    printf("	STA PARAMETER\n");
 	    printf("	LDA #0\n");
 	    printf("	STA PARAMETER\n");
@@ -733,7 +759,11 @@ void playfield(char **statement)
 	playfield_number++;
 	printf(" ldy #%d\n", l);
 	printf("	LDA #<PF_data%d\n", playfield_number);
-	printf("	LDX #((>PF_data%d) & $0f) | (((>PF_data%d) / 2) & $70)\n", playfield_number, playfield_number);
+	if(dpc_elf) {
+	    printf("	LDX #>PF_data%d\n", playfield_number, playfield_number);
+	} else {
+		printf("	LDX #((>PF_data%d) & $0f) | (((>PF_data%d) / 2) & $70)\n", playfield_number, playfield_number);
+	}
 	jsrbank1("pfsetup");
 
 	// use sprite data recorder for pf data
@@ -943,6 +973,8 @@ int switchjoy(char *input_source)
 
 void newbank(int bankno)
 {
+	if(dpc_elf) // elf based dpc doesn't have bank switching
+		return;
     FILE *bs_support;
     char line[500];
     char fullpath[500];
@@ -2312,7 +2344,7 @@ void doreturn(char **statement)
     // 1=return thisbank
     // 2=return otherbank
 
-    if (!strncmp(statement[2], "thisbank\0", 8) || !strncmp(statement[3], "thisbank\0", 8))
+    if (dpc_elf || !strncmp(statement[2], "thisbank\0", 8) || !strncmp(statement[3], "thisbank\0", 8))
 	bankedreturn = 1;
     else if (!strncmp(statement[2], "otherbank\0", 9) || !strncmp(statement[3], "otherbank\0", 9))
 	bankedreturn = 2;
@@ -2359,7 +2391,7 @@ void doreturn(char **statement)
 	return;
     }
 
-    if (bs)			// check if sub was called from the same bank
+    if (bs && !dpc_elf)			// check if sub was called from the same bank
     {
 	if (bs == 64)
 	{
@@ -2407,7 +2439,11 @@ void pfread(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	printf("	lda #(>C_function) & $0F\n");
+	if(dpc_elf) {
+		printf("	lda #(>C_function)\n");
+	} else {
+		printf("	lda #(>C_function) & $0F\n");
+	}
 	printf("	sta DF0HI\n");
 	printf("    lda #24\n");
 	printf("    sta DF0WRITE\n");
@@ -2456,7 +2492,11 @@ void pfpixel(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	printf("	lda #(>C_function) & $0F\n");
+	if(dpc_elf) {
+		printf("	lda #(>C_function)\n");
+	} else {
+		printf("	lda #(>C_function) & $0F\n");
+	}
 	printf("	sta DF0HI\n");
     }
 
@@ -2509,7 +2549,11 @@ void pfhline(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	printf("	lda #(>C_function) & $0F\n");
+	if(dpc_elf) {
+		printf("	lda #(>C_function)\n");
+	} else {
+		printf("	lda #(>C_function) & $0F\n");
+	}
 	printf("	sta DF0HI\n");
     }
 
@@ -2575,7 +2619,11 @@ void pfvline(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	printf("	lda #(>C_function) & $0F\n");
+	if(dpc_elf) {
+		printf("	lda #(>C_function)\n");
+	} else {
+		printf("	lda #(>C_function) & $0F\n");
+	}
 	printf("	sta DF0HI\n");
     }
 
@@ -2638,7 +2686,11 @@ void pfscroll(char **statement)
 	}
 	printf(" lda #<C_function\n");
 	printf(" sta DF0LOW\n");
-	printf(" lda #(>C_function) & $0F\n");
+	if(dpc_elf) {
+		printf("	lda #(>C_function)\n");
+	} else {
+		printf("	lda #(>C_function) & $0F\n");
+	}
 	printf(" sta DF0HI\n");
 
 	printf(" lda #32\n");
@@ -2825,7 +2877,12 @@ void player(char **statement)
     {
 	printf("	lda #<(playerpointers+%d)\n", (pl - 49) * 2 + 18 * doingcolor);
 	printf("	sta DF0LOW\n");
-	printf("	lda #(>(playerpointers+%d)) & $0F\n", (pl - 49) * 2 + 18 * doingcolor);
+	if(dpc_elf) {
+		printf("	lda #(>(playerpointers+%d))\n", (pl - 49) * 2 + 18 * doingcolor);
+	} else {
+		printf("	lda #(>(playerpointers+%d)) & $0F\n", (pl - 49) * 2 + 18 * doingcolor);
+	}
+	
 	printf("	sta DF0HI\n");
     }
     printf("	LDX #<%s\n", label);
@@ -2839,7 +2896,11 @@ void player(char **statement)
 	    printf("	STX player%ccolor\n", pl);
     }
     if (multisprite == 2)
-	printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
+	if(dpc_elf) {
+		printf("	LDA #>%s\n", label, label);	// DPC+
+	} else {
+		printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
+	}
     else
 	printf("	LDA #>%s\n", label);
     if ((multisprite == 2) && (pl != '0'))
@@ -3169,7 +3230,11 @@ void scorecolors(char **statement)
     printf("	lda #<scoredata\n");
     printf("	STA DF0LOW\n");
 
-    printf("	lda #((>scoredata) & $0f)\n");
+	if(dpc_elf) {
+		printf("	lda #((>scoredata))\n");
+	} else {
+		printf("	lda #((>scoredata) & $0f)\n");
+	}
     printf("	STA DF0HI\n");
     for (i = 0; i < 9; ++i)
     {
@@ -3397,7 +3462,11 @@ void doif(char **statement)
 	    {
 		printf("	lda #<C_function\n");
 		printf("	sta DF0LOW\n");
-		printf("	lda #(>C_function) & $0F\n");
+		if(dpc_elf) {
+			printf("	lda #(>C_function)\n");
+		} else {
+			printf("	lda #(>C_function) & $0F\n");
+		}		
 		printf("	sta DF0HI\n");
 		printf("  lda #20\n");
 		printf("  sta DF0WRITE\n");
@@ -5312,9 +5381,15 @@ void set(char **statement)
 	}
 	else if (!strncmp(statement[3], "DPC\0", 3))
 	{
-	    multisprite = 2;
-	    strcpy(redefined_variables[numredefvars++], "multisprite = 2");
-	    create_includes("DPCplus.inc");
+		multisprite = 2;
+		strcpy(redefined_variables[numredefvars++], "multisprite = 2");
+		dpc_elf = !strncmp(statement[3], "DPC+ELF\0", 3);
+		if(dpc_elf) {
+			strcpy(redefined_variables[numredefvars++], "DPCplusELF = 1");
+			create_includes("DPCplusELF.inc");
+		} else {
+	    	create_includes("DPCplus.inc");
+		}
 	    bs = 28;
 	    last_bank = 7;
 	    strcpy(redefined_variables[numredefvars++], "bankswitch_hotspot = $1FF6");

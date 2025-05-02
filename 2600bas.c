@@ -7,11 +7,12 @@
 #include "statements.h"
 #include "keywords.h"
 #include <math.h>
-#define BB_VERSION_INFO "batari Basic v1.7 (c)2022\n"
+#define BB_VERSION_INFO "batari Basic v1.8 (c)2025\n"
 
 extern int bank;
 
 extern int bs;
+extern int dpc_elf;
 extern int numconstants;
 extern int playfield_index[];
 
@@ -205,15 +206,18 @@ int main(int argc, char *argv[])
     barf_sprite_data();
 
     printf(" if ECHOFIRST\n");
-    if (bs == 28)
-	printf("       echo \"    \",[(DPC_graphics_end - *)]d , \"bytes of ROM space left");
-    else
+    if (bs == 28){
+        if(dpc_elf)
+            printf("       echo \"    \",[(end_of_address_space - *)]d , \"bytes of ROM space left");
+        else
+            printf("       echo \"    \",[(DPC_graphics_end - *)]d , \"bytes of ROM space left");
+    } else
 	printf("       echo \"    \",[(scoretable - *)]d , \"bytes of ROM space left");
     if (bs == 8)
 	printf(" in bank 2");
     if (bs == 16)
 	printf(" in bank 4");
-    if (bs == 28)
+    if (bs == 28 & !dpc_elf)
 	printf(" in graphics bank");
     if (bs == 32)
 	printf(" in bank 8");
