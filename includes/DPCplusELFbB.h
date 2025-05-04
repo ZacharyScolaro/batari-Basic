@@ -1,7 +1,7 @@
 ; Provided under the CC0 license. See the included LICENSE.txt for details.
 
  SEG.U vars
- org $80
+ org $30
 player0x ds 1
 topP1x ds 1
 missile0x ds 1
@@ -62,6 +62,7 @@ NUSIZ9 ds 1
 score ds 3
 COLUM0 ds 1
 COLUM1 ds 1
+COLUBL ds 1
 player0pointerlo ds 1
 player0pointerhi ds 1
 
