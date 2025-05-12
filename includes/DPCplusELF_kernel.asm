@@ -4,33 +4,7 @@ end_drawscreen
      rts
 
 pfsetup     
-     
-     sty temp1 
-     sta temp2
-     stx temp3
-     ldx #3
-pfsetupp
-     lda dffraclow,x
-     sta DF0LOW,x
-     lda dffrachi,x
-     sta DF0HI,x 
-     lda temp2
-     sta PARAMETER
-     lda temp3
-     sta PARAMETER
-     stx PARAMETER
-     sty PARAMETER 
-     LDA #1
-     sta CALLFUNCTION
-     clc
-     lda temp2
-     adc temp1
-     sta temp2
-     lda temp3
-     adc #0
-     sta temp3
-     dex
-     bpl pfsetupp
+     nop
      RETURN
 
 

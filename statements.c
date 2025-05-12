@@ -44,7 +44,7 @@ int pfcolorindexsave = 0;
 int pfcolornumber = 0;
 int dpc_elf = 0;
 
-int pfdata[50][256];
+int pfdata[100][256];
 char sprite_data[5000][50];
 int playfield_index[50];
 char includespath[500];
@@ -433,7 +433,7 @@ void playfieldcolorandheight(char **statement)
 	    }
 	    if (l > 255)
 		prerror("Error: too much data in pfcolor declaration\n");
-	    printf("	LDA #%d\n", l);
+	    printf("	LDA #%d\n", l & 0xff);
 	    printf("	STA PARAMETER\n");
 	    printf("	LDA #1\n");
 	    printf("	STA CALLFUNCTION\n");
@@ -587,7 +587,7 @@ void jsrbank1(char *location)
 // bankswitched jsr to bank 1
 // determines whether to use the standard jsr (for 2k/4k or bankswitched stuff in current bank)
 // or to switch banks before calling the routine
-    if ((!bs) || (bank == 1))
+    if ((!bs) || (bank == 1) || dpc_elf)
     {
 	printf(" jsr %s\n", location);
 	return;
@@ -757,7 +757,7 @@ void playfield(char **statement)
     {
 	// l is pf data height
 	playfield_number++;
-	printf(" ldy #%d\n", l);
+	printf(" ldy #%d\n", l & 0xff); // truncate 256 to 0 to avoid needing to pfscroll to set the last byte in the buffer
 	printf("	LDA #<PF_data%d\n", playfield_number);
 	if(dpc_elf) {
 	    printf("	LDX #>PF_data%d\n", playfield_number, playfield_number);
@@ -771,11 +771,22 @@ void playfield(char **statement)
 	for (j = 0; j < l; ++j)	// stored right side up
 	{
 	    sprintf(data, "	.byte %%");
-	    for (k = 31; k >= 24; k--)
-		if (pframdata[j][k] == one)
-		    strcat(data, "1");
+		if(dpc_elf)
+		{
+			for (k = 24; k < 32; ++k)
+			if (pframdata[j][k] == one)
+				strcat(data, "1");
+			else
+				strcat(data, "0");
+		}
 		else
-		    strcat(data, "0");
+		{
+			for (k = 31; k >= 24; k--)
+			if (pframdata[j][k] == one)
+				strcat(data, "1");
+			else
+				strcat(data, "0");
+		}
 	    strcat(data, "\n");
 	    strcpy(sprite_data[sprite_index++], data);
 	}
@@ -795,11 +806,22 @@ void playfield(char **statement)
 	for (j = 0; j < l; ++j)	// stored right side up
 	{
 	    sprintf(data, "	.byte %%");
-	    for (k = 15; k >= 8; k--)
-		if (pframdata[j][k] == one)
-		    strcat(data, "1");
+		if(dpc_elf)
+		{
+			for (k = 8; k < 16; ++k)
+			if (pframdata[j][k] == one)
+				strcat(data, "1");
+			else
+				strcat(data, "0");
+		}
 		else
-		    strcat(data, "0");
+		{
+			for (k = 15; k >= 8; k--)
+			if (pframdata[j][k] == one)
+			    strcat(data, "1");
+			else
+			    strcat(data, "0");
+		}
 	    strcat(data, "\n");
 	    strcpy(sprite_data[sprite_index++], data);
 	}
@@ -834,7 +856,7 @@ void jsr(char *location)
 {
 // determines whether to use the standard jsr (for 2k/4k or bankswitched stuff in current bank)
 // or to switch banks before calling the routine
-    if ((!bs) || (bank == last_bank))
+    if ((!bs) || (bank == last_bank) || dpc_elf)
     {
 	printf(" jsr %s\n", location);
 	return;
@@ -5096,17 +5118,17 @@ void dolet(char **cstatement)
 void dogoto(char **statement)
 {
     int anotherbank = 0;
-    if (!strncmp(statement[3], "bank", 4))
+    if (!dpc_elf && !strncmp(statement[3], "bank", 4))
     {
-	anotherbank = (int) (statement[3][4]) - '0';
-	if ((statement[3][5] >= '0') && (statement[3][5] <= '9'))
-	    anotherbank = (int) (statement[3][5]) - 38;
+		anotherbank = (int) (statement[3][4]) - '0';
+		if (!dpc_elf && (statement[3][5] >= '0') && (statement[3][5] <= '9'))
+			anotherbank = (int) (statement[3][5]) - 38;
     }
     else
     {
-	printf(" jmp .%s\n", statement[2]);
-	return;
-    }
+		printf(" jmp .%s\n", statement[2]);
+		return;
+	}
 
 // if here, we're jmp'ing to another bank
 // we need to switch banks
@@ -5134,16 +5156,16 @@ void gosub(char **statement)
     // fprintf(stderr,"Max. nested gosubs exceeded in line %s\n",statement[0]);
     // exit(1);
     //}
-    if (!strncmp(statement[3], "bank", 4))
+    if (!dpc_elf && !strncmp(statement[3], "bank", 4))
     {
-	anotherbank = (int) (statement[3][4]) - '0';
-	if ((statement[3][5] >= '0') && (statement[3][5] <= '9'))
-	    anotherbank = (int) (statement[3][5]) - 38;
+		anotherbank = (int) (statement[3][4]) - '0';
+		if ((statement[3][5] >= '0') && (statement[3][5] <= '9'))
+			anotherbank = (int) (statement[3][5]) - 38;
     }
     else
     {
-	printf(" jsr .%s\n", statement[2]);
-	return;
+		printf(" jsr .%s\n", statement[2]);
+		return;
     }
 
 // if here, we're jsr'ing to another bank

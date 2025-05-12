@@ -21,14 +21,13 @@ ROM_START = .
      RORG $0100
 
 
-
-
-
-
+    ; Store the addresses as uint16[] for the elf driver to use
     .byte <drawscreen
     .byte >drawscreen
     .byte <end_drawscreen
     .byte >end_drawscreen
+    .byte <pfsetup
+    .byte >pfsetup
     .byte <BKCOLS
     .byte >BKCOLS
     .byte <PFCOLS
@@ -95,6 +94,344 @@ ROM_START = .
     .byte >pfscore2
     .byte <PF1L
     .byte >PF1L
+
+     ORG $0800 + ROM_START
+     RORG $0800
+
+    ; c: Playfield Colors Control
+    ;   0: Playfield Colors has its own PF_FRAC_INC, PF_WRITE_OFFSET, and PF_VER_SCROLL
+    ;   1: fov settings are applied to playfield colors
+    ;
+    ; b: Background Colors Control
+    ;   0: Background Colors has its own PF_FRAC_INC, PF_WRITE_OFFSET, and PF_VER_SCROLL
+    ;   1: fov settings are applied to background colors
+    ;
+    ; f: Fractional Increment Control
+    ;   0: Each playfield column has its own PF_FRAC_INC
+    ;   1: PF_FRAC_INC_0 is applied to all columns
+    ;
+    ; o: Write Offset Control
+    ;   0: Each playfield column has its own PF_WRITE_OFFSET
+    ;   1: PF_WRITE_OFFSET_0 is applied to all columns
+    ;
+    ; v: Vertical Scroll Control
+    ;   0: Each playfield column has its own PF_VER_SCROLL
+    ;   1: PF_VER_SCROLL_0 is applied to all columns
+    ;
+    ; p: PFSCROLL mode
+    ;   0: Scroll resolution matches FRACINC registers and pfscroll changes write offsets,
+    ;   1-Fine grain. -128 to +127 scanlines
+    ;
+    ; ww: PF width. How many PF columns wide to scroll through horizontally. Each PF column is 8 PF pixels wide (32 pixels)
+    ;   0: 4 columns with sides set to PF0. No horizontal scrolling. Primarily for backwards compatability with DPC+ kernel.
+    ;   1: 8 columns. 256 (64 PF) Pixels wide. PF_HOR_SCROLL_HI is not used
+    ;   2: 16 columns. 512 (128 PF) Pixels wide. PF_HOR_SCROLL_HI is kept in the range 0-1
+    ;   3: 32 columns. 1024 (256 PF) Pixels wide. PF_HOR_SCROLL_HI is kept in the range 0-3
+PF_MODE ; cbfo vpww
+    .byte $00
+
+    ; 0-31 Which playfield column write operations will start with 
+    ; when writing multiple columns the operation will wrap back to column 0 after column 31
+PF_WRITE_INDEX 
+    .byte $00
+
+    ; Horizontal scroll position in pixels. I.E. 16 would move Playfield 4 PF pixels left.
+PF_HOR_SCROLL_LO
+    .byte $00
+PF_HOR_SCROLL_HI
+    .byte $00
+
+PF_FRAC_INC
+PF_FRAC_INC_0
+    .byte 00
+PF_WRITE_OFFSET ; 0-255 where to start writing in each 256 byte column buffer. Writing past the end will wrap back to 0 automatically
+PF_WRITE_OFFSET_0
+    .byte $00
+PF_VER_SCROLL_LO
+PF_VER_SCROLL_LO_0
+    .byte $00
+PF_VER_SCROLL_HI
+PF_VER_SCROLL_HI_0
+    .byte $00
+
+PF_FRAC_INC_1
+    .byte 00
+PF_WRITE_OFFSET_1
+    .byte $00
+PF_VER_SCROLL_LO_1
+    .byte $00
+PF_VER_SCROLL_HI_1
+    .byte $00
+
+PF_FRAC_INC_2
+    .byte 00
+PF_WRITE_OFFSET_2
+    .byte $00
+PF_VER_SCROLL_LO_2
+    .byte $00
+PF_VER_SCROLL_HI_2
+    .byte $00
+
+PF_FRAC_INC_3
+    .byte 00
+PF_WRITE_OFFSET_3
+    .byte $00
+PF_VER_SCROLL_LO_3
+    .byte $00
+PF_VER_SCROLL_HI_3
+    .byte $00
+
+PF_FRAC_INC_4
+    .byte 00
+PF_WRITE_OFFSET_4
+    .byte $00
+PF_VER_SCROLL_LO_4
+    .byte $00
+PF_VER_SCROLL_HI_4
+    .byte $00
+
+PF_FRAC_INC_5
+    .byte 00
+PF_WRITE_OFFSET_5
+    .byte $00
+PF_VER_SCROLL_LO_5
+    .byte $00
+PF_VER_SCROLL_HI_5
+    .byte $00
+
+PF_FRAC_INC_6
+    .byte 00
+PF_WRITE_OFFSET_6
+    .byte $00
+PF_VER_SCROLL_LO_6
+    .byte $00
+PF_VER_SCROLL_HI_6
+    .byte $00
+
+PF_FRAC_INC_7
+    .byte 00
+PF_WRITE_OFFSET_7
+    .byte $00
+PF_VER_SCROLL_LO_7
+    .byte $00
+PF_VER_SCROLL_HI_7
+    .byte $00
+
+PF_FRAC_INC_8
+    .byte 00
+PF_WRITE_OFFSET_8
+    .byte $00
+PF_VER_SCROLL_LO_8
+    .byte $00
+PF_VER_SCROLL_HI_8
+    .byte $00
+
+PF_FRAC_INC_9
+    .byte 00
+PF_WRITE_OFFSET_9
+    .byte $00
+PF_VER_SCROLL_LO_9
+    .byte $00
+PF_VER_SCROLL_HI_9
+    .byte $00
+
+PF_FRAC_INC_10
+    .byte 00
+PF_WRITE_OFFSET_10
+    .byte $00
+PF_VER_SCROLL_LO_10
+    .byte $00
+PF_VER_SCROLL_HI_10
+    .byte $00
+
+PF_FRAC_INC_11
+    .byte 00
+PF_WRITE_OFFSET_11
+    .byte $00
+PF_VER_SCROLL_LO_11
+    .byte $00
+PF_VER_SCROLL_HI_11
+    .byte $00
+
+PF_FRAC_INC_12
+    .byte 00
+PF_WRITE_OFFSET_12
+    .byte $00
+PF_VER_SCROLL_LO_12
+    .byte $00
+PF_VER_SCROLL_HI_12
+    .byte $00
+
+PF_FRAC_INC_13
+    .byte 00
+PF_WRITE_OFFSET_13
+    .byte $00
+PF_VER_SCROLL_LO_13
+    .byte $00
+PF_VER_SCROLL_HI_13
+    .byte $00
+
+PF_FRAC_INC_14
+    .byte 00
+PF_WRITE_OFFSET_14
+    .byte $00
+PF_VER_SCROLL_LO_14
+    .byte $00
+PF_VER_SCROLL_HI_14
+    .byte $00
+
+PF_FRAC_INC_15
+    .byte 00
+PF_WRITE_OFFSET_15
+    .byte $00
+PF_VER_SCROLL_LO_15
+    .byte $00
+PF_VER_SCROLL_HI_15
+    .byte $00
+
+PF_FRAC_INC_16
+    .byte 00
+PF_WRITE_OFFSET_16
+    .byte $00
+PF_VER_SCROLL_LO_16
+    .byte $00
+PF_VER_SCROLL_HI_16
+    .byte $00
+
+PF_FRAC_INC_17
+    .byte 00
+PF_WRITE_OFFSET_17
+    .byte $00
+PF_VER_SCROLL_LO_17
+    .byte $00
+PF_VER_SCROLL_HI_17
+    .byte $00
+
+PF_FRAC_INC_18
+    .byte 00
+PF_WRITE_OFFSET_18
+    .byte $00
+PF_VER_SCROLL_LO_18
+    .byte $00
+PF_VER_SCROLL_HI_18
+    .byte $00
+
+PF_FRAC_INC_19
+    .byte 00
+PF_WRITE_OFFSET_19
+    .byte $00
+PF_VER_SCROLL_LO_19
+    .byte $00
+PF_VER_SCROLL_HI_19
+    .byte $00
+
+PF_FRAC_INC_20
+    .byte 00
+PF_WRITE_OFFSET_20
+    .byte $00
+PF_VER_SCROLL_LO_20
+    .byte $00
+PF_VER_SCROLL_HI_20
+    .byte $00
+
+PF_FRAC_INC_21
+    .byte 00
+PF_WRITE_OFFSET_21
+    .byte $00
+PF_VER_SCROLL_LO_21
+    .byte $00
+PF_VER_SCROLL_HI_21
+    .byte $00
+
+PF_FRAC_INC_22
+    .byte 00
+PF_WRITE_OFFSET_22
+    .byte $00
+PF_VER_SCROLL_LO_22
+    .byte $00
+PF_VER_SCROLL_HI_22
+    .byte $00
+
+PF_FRAC_INC_23
+    .byte 00
+PF_WRITE_OFFSET_23
+    .byte $00
+PF_VER_SCROLL_LO_23
+    .byte $00
+PF_VER_SCROLL_HI_23
+    .byte $00
+
+PF_FRAC_INC_24
+    .byte 00
+PF_WRITE_OFFSET_24
+    .byte $00
+PF_VER_SCROLL_LO_24
+    .byte $00
+PF_VER_SCROLL_HI_24
+    .byte $00
+
+PF_FRAC_INC_25
+    .byte 00
+PF_WRITE_OFFSET_25
+    .byte $00
+PF_VER_SCROLL_LO_25
+    .byte $00
+PF_VER_SCROLL_HI_25
+    .byte $00
+
+PF_FRAC_INC_26
+    .byte 00
+PF_WRITE_OFFSET_26
+    .byte $00
+PF_VER_SCROLL_LO_26
+    .byte $00
+PF_VER_SCROLL_HI_26
+    .byte $00
+
+PF_FRAC_INC_27
+    .byte 00
+PF_WRITE_OFFSET_27
+    .byte $00
+PF_VER_SCROLL_LO_27
+    .byte $00
+PF_VER_SCROLL_HI_27
+    .byte $00
+
+PF_FRAC_INC_28
+    .byte 00
+PF_WRITE_OFFSET_28
+    .byte $00
+PF_VER_SCROLL_LO_28
+    .byte $00
+PF_VER_SCROLL_HI_28
+    .byte $00
+
+PF_FRAC_INC_29
+    .byte 00
+PF_WRITE_OFFSET_29
+    .byte $00
+PF_VER_SCROLL_LO_29
+    .byte $00
+PF_VER_SCROLL_HI_29
+    .byte $00
+
+PF_FRAC_INC_30
+    .byte 00
+PF_WRITE_OFFSET_30
+    .byte $00
+PF_VER_SCROLL_LO_30
+    .byte $00
+PF_VER_SCROLL_HI_30
+    .byte $00
+
+PF_FRAC_INC_31
+    .byte 00
+PF_WRITE_OFFSET_31
+    .byte $00
+PF_VER_SCROLL_LO_31
+    .byte $00
+PF_VER_SCROLL_HI_31
+    .byte $00
 
      ORG $1080 + ROM_START
      RORG $1080
