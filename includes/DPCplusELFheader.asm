@@ -26,8 +26,6 @@ ROM_START = .
     .byte >drawscreen
     .byte <end_drawscreen
     .byte >end_drawscreen
-    .byte <pfsetup
-    .byte >pfsetup
     .byte <BKCOLS
     .byte >BKCOLS
     .byte <PFCOLS
@@ -431,6 +429,24 @@ PF_WRITE_OFFSET_31
 PF_VER_SCROLL_LO_31
     .byte $00
 PF_VER_SCROLL_HI_31
+    .byte $00
+
+PF_FRAC_INC_PFCOL
+    .byte 00
+PF_WRITE_OFFSET_PFCOL
+    .byte $00
+PF_VER_SCROLL_LO_PFCOL
+    .byte $00
+PF_VER_SCROLL_HI_PFCOL
+    .byte $00
+
+PF_FRAC_INC_BKCOL
+    .byte 00
+PF_WRITE_OFFSET_BKCOL
+    .byte $00
+PF_VER_SCROLL_LO_BKCOL
+    .byte $00
+PF_VER_SCROLL_HI_BKCOL
     .byte $00
 
      ORG $1080 + ROM_START

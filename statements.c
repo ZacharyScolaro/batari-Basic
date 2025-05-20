@@ -628,8 +628,8 @@ void playfield(char **statement)
     char zero = '.';
     char one = 'X';
     int i, j, k, l = 0;
-    char data[200];
-    char pframdata[255][200];
+    char data[300];
+    char pframdata[256][200];
     if ((unsigned char) statement[2][0] > (unsigned char) 0x20)
 	zero = statement[2][0];
     if ((unsigned char) statement[3][0] > (unsigned char) 0x20)
@@ -640,7 +640,7 @@ void playfield(char **statement)
 
     while (1)
     {
-	if ((!fgets(data, 100, stdin)) || ((data[0] != zero) && (data[0] != one) && (data[0] != 'e')))
+	if ((!fgets(data, sizeof(data), stdin)) || ((data[0] != zero) && (data[0] != one) && (data[0] != 'e')))
 	{
 	    prerror("Error: Missing \"end\" keyword at end of playfield declaration\n");
 	    exit(1);
@@ -755,38 +755,61 @@ void playfield(char **statement)
     }
     else			// RAM pf in DPC+
     {
+		int bytesPerLine = 4;
+		if(dpc_elf){
+			k = 0;
+			for ( j = 0; j < 256; j++)
+			{
+				if(pframdata[0][j] != zero && pframdata[0][j] != one )
+				break;
+				k++;
+			}
+			bytesPerLine = k /8;
+		}
 	// l is pf data height
 	playfield_number++;
 	printf(" ldy #%d\n", l & 0xff); // truncate 256 to 0 to avoid needing to pfscroll to set the last byte in the buffer
 	printf("	LDA #<PF_data%d\n", playfield_number);
 	if(dpc_elf) {
 	    printf("	LDX #>PF_data%d\n", playfield_number, playfield_number);
+		printf(" jsr pfsetup%d\n", bytesPerLine);
 	} else {
 		printf("	LDX #((>PF_data%d) & $0f) | (((>PF_data%d) / 2) & $70)\n", playfield_number, playfield_number);
+		jsrbank1("pfsetup");
 	}
-	jsrbank1("pfsetup");
+
+
+
 
 	// use sprite data recorder for pf data
 	sprintf(sprite_data[sprite_index++], "PF_data%d\n", playfield_number);
+	if(dpc_elf){
+
+		for (i  = 0; i < bytesPerLine; ++i)
+		{
+			for (j = 0; j < l; ++j)	// stored right side up
+			{
+				sprintf(data, "	.byte %%");
+				for (k = i * 8; k < (i+1) * 8; ++k)
+				if (pframdata[j][k] == one)
+					strcat(data, "1");
+				else
+					strcat(data, "0");
+				strcat(data, "\n");
+				strcpy(sprite_data[sprite_index++], data);
+			}
+		}
+	}
+	else
+	{
 	for (j = 0; j < l; ++j)	// stored right side up
 	{
 	    sprintf(data, "	.byte %%");
-		if(dpc_elf)
-		{
-			for (k = 24; k < 32; ++k)
-			if (pframdata[j][k] == one)
-				strcat(data, "1");
-			else
-				strcat(data, "0");
-		}
+		for (k = 31; k >= 24; k--)
+		if (pframdata[j][k] == one)
+			strcat(data, "1");
 		else
-		{
-			for (k = 31; k >= 24; k--)
-			if (pframdata[j][k] == one)
-				strcat(data, "1");
-			else
-				strcat(data, "0");
-		}
+			strcat(data, "0");
 	    strcat(data, "\n");
 	    strcpy(sprite_data[sprite_index++], data);
 	}
@@ -806,22 +829,11 @@ void playfield(char **statement)
 	for (j = 0; j < l; ++j)	// stored right side up
 	{
 	    sprintf(data, "	.byte %%");
-		if(dpc_elf)
-		{
-			for (k = 8; k < 16; ++k)
-			if (pframdata[j][k] == one)
-				strcat(data, "1");
-			else
-				strcat(data, "0");
-		}
+		for (k = 15; k >= 8; k--)
+		if (pframdata[j][k] == one)
+			strcat(data, "1");
 		else
-		{
-			for (k = 15; k >= 8; k--)
-			if (pframdata[j][k] == one)
-			    strcat(data, "1");
-			else
-			    strcat(data, "0");
-		}
+			strcat(data, "0");
 	    strcat(data, "\n");
 	    strcpy(sprite_data[sprite_index++], data);
 	}
@@ -837,7 +849,7 @@ void playfield(char **statement)
 	    strcat(data, "\n");
 	    strcpy(sprite_data[sprite_index++], data);
 	}
-
+	}
     }
 
 }

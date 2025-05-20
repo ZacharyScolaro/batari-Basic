@@ -3,11 +3,6 @@ drawscreen
 end_drawscreen
      rts
 
-pfsetup     
-     nop
-     RETURN
-
-
 fetcher_address_table
 dflow     
      .byte <P0COLOR
