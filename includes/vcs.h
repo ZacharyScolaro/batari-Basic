@@ -132,9 +132,6 @@ RESMP1      ds 1    ; $29   0000 00x0   Reset Missle 1 to Player 1
 HMOVE       ds 1    ; $2A   ---- ----   Apply Horizontal Motion
 HMCLR       ds 1    ; $2B   ---- ----   Clear Horizontal Move Registers
 CXCLR       ds 1    ; $2C   ---- ----   Clear Collision Latches
- ifnconst DPCplusELF
-Score_Background_Color ds 1  ; $2D 
- endif
 
 ;-------------------------------------------------------------------------------
 

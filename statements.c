@@ -5417,18 +5417,24 @@ void set(char **statement)
 	{
 		multisprite = 2;
 		strcpy(redefined_variables[numredefvars++], "multisprite = 2");
-		dpc_elf = !strncmp(statement[3], "DPC+ELF\0", 3);
-		if(dpc_elf) {
-			strcpy(redefined_variables[numredefvars++], "DPCplusELF = 1");
-			create_includes("DPCplusELF.inc");
-		} else {
-	    	create_includes("DPCplus.inc");
-		}
+    	create_includes("DPCplus.inc");
 	    bs = 28;
 	    last_bank = 7;
 	    strcpy(redefined_variables[numredefvars++], "bankswitch_hotspot = $1FF6");
 	    strcpy(redefined_variables[numredefvars++], "bankswitch = 28");
 	    strcpy(redefined_variables[numredefvars++], "bs_mask = 7");
+	}
+	else if (!strncmp(statement[3], "PXE\0", 3))
+	{
+		multisprite = 2;
+		strcpy(redefined_variables[numredefvars++], "multisprite = 2");
+		dpc_elf = 1;
+		strcpy(redefined_variables[numredefvars++], "DPCplusELF = 1");
+		create_includes("DPCplusELF.inc");
+	    bs = 28;
+		strcpy(redefined_variables[numredefvars++], "bankswitch_hotspot = $1FF6");
+	    strcpy(redefined_variables[numredefvars++], "bankswitch = 28");
+		strcpy(redefined_variables[numredefvars++], "bs_mask = 7");
 	}
 	else if (!strncmp(statement[3], "multisprite_no_include\0", 11))
 	{

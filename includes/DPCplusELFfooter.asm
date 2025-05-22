@@ -8,6 +8,10 @@ end_of_address_space
 
  incbin "DpcPlusELF-post.arm"
 
+    SEG.U
+    rorg $002d
+Score_Background_Color ds 1
+
     ; ARM Functions called via JSR
     SEG.U
     rorg $0000
