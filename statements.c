@@ -758,7 +758,7 @@ void playfield(char **statement)
 		int bytesPerLine = 4;
 		if(dpc_elf){
 			k = 0;
-			for ( j = 0; j < 256; j++)
+			for ( j = 0; j < 15*8; j++)
 			{
 				if(pframdata[0][j] != zero && pframdata[0][j] != one )
 				break;
@@ -2707,6 +2707,61 @@ void pfvline(char **statement)
 void pfscroll(char **statement)
 {
     invalidate_Areg();
+	if (dpc_elf)
+	{
+		if (!strncmp(statement[2], "right\0", 5))
+		{
+			if (statement[3][0] >= '0' && statement[3][0] <= '9')
+			{
+				printf(" LDA #%s\n", statement[3]);
+			}
+			else
+			{
+				printf(" LDA #1\n", statement[2]);
+			}
+			jsr("pfscroll_right");
+			return;
+		}
+		if (!strncmp(statement[2], "left\0", 5))
+		{
+			if (statement[3][0] >= '0' && statement[3][0] <= '9')
+			{
+				printf(" LDA #%s\n", statement[3]);
+			}
+			else
+			{
+				printf(" LDA #1\n", statement[2]);
+			}
+			jsr("pfscroll_left");
+			return;
+		}
+		if (!strncmp(statement[2], "down\0", 5))
+		{
+			if (statement[3][0] >= '0' && statement[3][0] <= '9')
+			{
+				printf(" LDA #%s\n", statement[3]);
+			}
+			else
+			{
+				printf(" LDA #1\n", statement[2]);
+			}
+			jsr("pfscroll_down");
+			return;
+		}
+		if (!strncmp(statement[2], "up\0", 5))
+		{
+			if (statement[3][0] >= '0' && statement[3][0] <= '9')
+			{
+				printf(" LDA #%s\n", statement[3]);
+			}
+			else
+			{
+				printf(" LDA #1\n", statement[2]);
+			}
+			jsr("pfscroll_up");
+			return;
+		}
+	}
     if (bs == 28)
     {
 	//DPC+ version of function uses the syntax: pfscroll #LINES [start queue#] [end queue#]

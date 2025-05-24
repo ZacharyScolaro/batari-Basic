@@ -30,20 +30,9 @@ pfsetup12 ds 1
 pfsetup13 ds 1
 pfsetup14 ds 1
 pfsetup15 ds 1
-pfsetup16 ds 1
-pfsetup17 ds 1
-pfsetup18 ds 1
-pfsetup19 ds 1
-pfsetup20 ds 1
-pfsetup21 ds 1
-pfsetup22 ds 1
-pfsetup23 ds 1
-pfsetup24 ds 1
-pfsetup25 ds 1
-pfsetup26 ds 1
-pfsetup27 ds 1
-pfsetup28 ds 1
-pfsetup29 ds 1
-pfsetup30 ds 1
-pfsetup31 ds 1
-pfsetup32 ds 1
+
+    rorg $000f
+pfscroll_right ds 1
+pfscroll_left ds 1
+pfscroll_down ds 1
+pfscroll_up ds 1
