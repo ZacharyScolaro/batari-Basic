@@ -1,4 +1,13 @@
 ; Provided under the CC0 license. See the included LICENSE.txt for details.
+; font equates
+.21stcentury = 1
+alarmclock = 2     
+handwritten = 3    
+interrupted = 4    
+retroputer = 5    
+whimsey = 6
+tiny = 7
+hex = 8
 
 ; feel free to modify the score graphics - just keep each digit 8 high
 ; and keep the conditional compilation stuff intact
@@ -27,22 +36,13 @@
      ORG $FF9C
    endif
  endif
- endif
 
-; font equates
-.21stcentury = 1
-alarmclock = 2     
-handwritten = 3    
-interrupted = 4    
-retroputer = 5    
-whimsey = 6
-tiny = 7
-hex = 8
 
  ifconst font
    if font == hex
      ORG . - 48
    endif
+ endif
  endif
 
 scoretable
