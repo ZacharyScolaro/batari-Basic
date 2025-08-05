@@ -92,6 +92,12 @@ ROM_START = .
     .byte >pfscore2
     .byte <PF1L
     .byte >PF1L
+    .byte <simple48
+    .byte >simple48
+    .byte <miniKernel0type
+    .byte >miniKernel0type
+    .byte <miniKernelCount
+    .byte >miniKernelCount
 
      ORG $0800 + ROM_START
      RORG $0800
@@ -296,6 +302,52 @@ PF_VER_SCROLL_LO_BKCOL
 PF_VER_SCROLL_HI_BKCOL
     .byte $00
 
+; Simple 48 Pixel Mode
+simple48 .byte 0 ; 0-Normal Multisprite kernel lines 0-179, 1-48 Pixel Sprite using backgroundcolor, playfieldcolor, and playfield data
+
+; MiniKernels
+
+miniKernelCount .byte 0
+
+; Types
+mkMultiSprite = 0   ; player0Height graphicLo graphicHi colorLo colorHi nusiz0 player0x player0y
+mkScore = 1 ; paddingTop barLeft barRight digitsLeft digitsMiddle digitsRight colubk colupf   
+mk48Pixel = 2 ; paddingTop graphicLo graphicHi colorLo colorHi index graphicHeight
+     
+miniKernelId SET 0
+ REPEAT 24
+miniKernel,miniKernelId,"type" .byte 0
+miniKernel,miniKernelId,"height"   .byte 0
+  ; arg 0
+miniKernel,miniKernelId,"paddingTop"
+miniKernel,miniKernelId,"player0Height" .byte 0
+  ; arg 1
+miniKernel,miniKernelId,"graphicLo"
+miniKernel,miniKernelId,"barLeft" .byte 0
+  ; arg 2
+miniKernel,miniKernelId,"graphicHi"
+miniKernel,miniKernelId,"barRight" .byte 0
+  ; arg3
+miniKernel,miniKernelId,"colorLo"
+miniKernel,miniKernelId,"digitsLeft" .byte 0
+  ; arg 4
+miniKernel,miniKernelId,"colorHi"
+miniKernel,miniKernelId,"digitsMiddle" .byte 0
+  ; arg 5
+miniKernel,miniKernelId,"nusiz0"
+miniKernel,miniKernelId,"index"
+miniKernel,miniKernelId,"digitsRight" .byte 0
+  ; arg 6
+miniKernel,miniKernelId,"player0x"
+miniKernel,miniKernelId,"graphicHeight"
+miniKernel,miniKernelId,"colubk" .byte 0
+  ; arg 7
+miniKernel,miniKernelId,"player0y"
+miniKernel,miniKernelId,"colupf" .byte 0
+
+miniKernelId SET miniKernelId+1
+ REPEND     
+
+
      ORG $1080 + ROM_START
      RORG $1080
-
