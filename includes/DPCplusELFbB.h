@@ -246,17 +246,8 @@ var57 ds 1
 var58 ds 1
 var59 ds 1
 var60 ds 1
-var61 ds 1
-var62 ds 1
-var63 ds 1
-var64 ds 1
-var65 ds 1
-var66 ds 1
-var67 ds 1
-var68 ds 1
-var69 ds 1
-var70 ds 1
 
+stack_reserved ds 10
  echo "free ZP ram:",($100-*)d
  
  SEG.U vars
