@@ -23,12 +23,13 @@ clearmem
  ldx #8
  stx playfieldpos
  stx FASTFETCH
- ldx #8
+ ldx #15
  lda #224
 inityloop
  sta player1y,x
  dex
  bpl inityloop
+ stx $2d ; Default score color to last colubk
 
  lda #1
  sta CTRLPF

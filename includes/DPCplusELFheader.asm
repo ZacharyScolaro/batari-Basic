@@ -15,7 +15,7 @@ ROM_START = .
 
      ORG $0000 + ROM_START
      RORG $0000
-     dc "DPC+ELF"
+     dc "PXE-ROM"
 
      ORG $0100 + ROM_START
      RORG $0100
