@@ -21,7 +21,7 @@ ROM_START = .
      RORG $0100
 
 
-    ; Store the addresses as uint16[] for the elf driver to use
+    ; Store the addresses as uint16[] for the PXE kernel to use
     .byte <drawscreen
     .byte >drawscreen
     .byte <end_drawscreen

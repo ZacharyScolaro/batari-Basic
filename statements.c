@@ -42,7 +42,7 @@ int macroactive = 0;
 int kernel_options = 0;
 int pfcolorindexsave = 0;
 int pfcolornumber = 0;
-int dpc_elf = 0;
+int isPXE = 0;
 
 int pfdata[100][256];
 char sprite_data[5000][50];
@@ -94,7 +94,7 @@ void pfclear(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #>C_function\n");
 	} else {
 		printf("	lda #(>C_function) & $0F\n");
@@ -198,7 +198,7 @@ void do_stack(char **statement)
     if (isimmed(statement[2])) {
     	printf("	lda #<(STACKbegin+%s)\n", statement[2]);
     	printf("	STA DF7LOW\n");
-		if(dpc_elf) {
+		if(isPXE) {
     		printf("	lda #(>(STACKbegin+%s))\n", statement[2]);
 		} else {
     		printf("	lda #(>(STACKbegin+%s)) & $0F\n", statement[2]);
@@ -227,7 +227,7 @@ void bkcolors(char **statement)
 	removeCR(label);
 	printf("	LDA #<BKCOLS\n");
 	printf("	STA DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	LDA #(>BKCOLS)\n");
 	} else {
 		printf("	LDA #(>BKCOLS) & $0F\n");
@@ -235,7 +235,7 @@ void bkcolors(char **statement)
 	printf("	STA DF0HI\n");
 	printf("	LDA #<%s\n", label);
 	printf("	STA PARAMETER\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	LDA #>%s\n", label, label);	// DPC+
 	} else {
 		printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
@@ -398,7 +398,7 @@ void playfieldcolorandheight(char **statement)
 	    removeCR(label);
 	    printf("	LDA #<PFCOLS\n");
 	    printf("	STA DF0LOW\n");
-		if(dpc_elf) {
+		if(isPXE) {
 			printf("	LDA #(>PFCOLS)\n");
 		} else {
 			printf("	LDA #(>PFCOLS) & $0F\n");
@@ -406,7 +406,7 @@ void playfieldcolorandheight(char **statement)
 	    printf("	STA DF0HI\n");
 	    printf("	LDA #<%s\n", label);
 	    printf("	STA PARAMETER\n");
-		if(dpc_elf) {
+		if(isPXE) {
 		    printf("	LDA #>%s\n", label, label);	// DPC+
 		} else {
 			printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
@@ -587,7 +587,7 @@ void jsrbank1(char *location)
 // bankswitched jsr to bank 1
 // determines whether to use the standard jsr (for 2k/4k or bankswitched stuff in current bank)
 // or to switch banks before calling the routine
-    if ((!bs) || (bank == 1) || dpc_elf)
+    if ((!bs) || (bank == 1) || isPXE)
     {
 	printf(" jsr %s\n", location);
 	return;
@@ -756,7 +756,7 @@ void playfield(char **statement)
     else			// RAM pf in DPC+
     {
 		int bytesPerLine = 4;
-		if(dpc_elf){
+		if(isPXE){
 			k = 0;
 			for ( j = 0; j < 15*8; j++)
 			{
@@ -770,7 +770,7 @@ void playfield(char **statement)
 	playfield_number++;
 	printf(" ldy #%d\n", l & 0xff); // truncate 256 to 0 to avoid needing to pfscroll to set the last byte in the buffer
 	printf("	LDA #<PF_data%d\n", playfield_number);
-	if(dpc_elf) {
+	if(isPXE) {
 	    printf("	LDX #>PF_data%d\n", playfield_number, playfield_number);
 		printf(" jsr pfsetup%d\n", bytesPerLine);
 	} else {
@@ -783,7 +783,7 @@ void playfield(char **statement)
 
 	// use sprite data recorder for pf data
 	sprintf(sprite_data[sprite_index++], "PF_data%d\n", playfield_number);
-	if(dpc_elf){
+	if(isPXE){
 
 		for (i  = 0; i < bytesPerLine; ++i)
 		{
@@ -868,7 +868,7 @@ void jsr(char *location)
 {
 // determines whether to use the standard jsr (for 2k/4k or bankswitched stuff in current bank)
 // or to switch banks before calling the routine
-    if ((!bs) || (bank == last_bank) || dpc_elf)
+    if ((!bs) || (bank == last_bank) || isPXE)
     {
 	printf(" jsr %s\n", location);
 	return;
@@ -1007,7 +1007,7 @@ int switchjoy(char *input_source)
 
 void newbank(int bankno)
 {
-	if(dpc_elf) // elf based dpc doesn't have bank switching
+	if(isPXE) // PXE doesn't have bank switching
 		return;
     FILE *bs_support;
     char line[500];
@@ -2378,7 +2378,7 @@ void doreturn(char **statement)
     // 1=return thisbank
     // 2=return otherbank
 
-    if (dpc_elf || !strncmp(statement[2], "thisbank\0", 8) || !strncmp(statement[3], "thisbank\0", 8))
+    if (isPXE || !strncmp(statement[2], "thisbank\0", 8) || !strncmp(statement[3], "thisbank\0", 8))
 	bankedreturn = 1;
     else if (!strncmp(statement[2], "otherbank\0", 9) || !strncmp(statement[3], "otherbank\0", 9))
 	bankedreturn = 2;
@@ -2425,7 +2425,7 @@ void doreturn(char **statement)
 	return;
     }
 
-    if (bs && !dpc_elf)			// check if sub was called from the same bank
+    if (bs && !isPXE)			// check if sub was called from the same bank
     {
 	if (bs == 64)
 	{
@@ -2473,7 +2473,7 @@ void pfread(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #(>C_function)\n");
 	} else {
 		printf("	lda #(>C_function) & $0F\n");
@@ -2526,7 +2526,7 @@ void pfpixel(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #(>C_function)\n");
 	} else {
 		printf("	lda #(>C_function) & $0F\n");
@@ -2583,7 +2583,7 @@ void pfhline(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #(>C_function)\n");
 	} else {
 		printf("	lda #(>C_function) & $0F\n");
@@ -2653,7 +2653,7 @@ void pfvline(char **statement)
     {
 	printf("	lda #<C_function\n");
 	printf("	sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #(>C_function)\n");
 	} else {
 		printf("	lda #(>C_function) & $0F\n");
@@ -2707,7 +2707,7 @@ void pfvline(char **statement)
 void pfscroll(char **statement)
 {
     invalidate_Areg();
-	if (dpc_elf)
+	if (isPXE)
 	{
 		if (!strncmp(statement[2], "right\0", 5))
 		{
@@ -2775,7 +2775,7 @@ void pfscroll(char **statement)
 	}
 	printf(" lda #<C_function\n");
 	printf(" sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #(>C_function)\n");
 	} else {
 		printf("	lda #(>C_function) & $0F\n");
@@ -2966,7 +2966,7 @@ void player(char **statement)
     {
 	printf("	lda #<(playerpointers+%d)\n", (pl - 49) * 2 + 18 * doingcolor);
 	printf("	sta DF0LOW\n");
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #(>(playerpointers+%d))\n", (pl - 49) * 2 + 18 * doingcolor);
 	} else {
 		printf("	lda #(>(playerpointers+%d)) & $0F\n", (pl - 49) * 2 + 18 * doingcolor);
@@ -2985,7 +2985,7 @@ void player(char **statement)
 	    printf("	STX player%ccolor\n", pl);
     }
     if (multisprite == 2)
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	LDA #>%s\n", label, label);	// DPC+
 	} else {
 		printf("	LDA #((>%s) & $0f) | (((>%s) / 2) & $70)\n", label, label);	// DPC+
@@ -3319,7 +3319,7 @@ void scorecolors(char **statement)
     printf("	lda #<scoredata\n");
     printf("	STA DF0LOW\n");
 
-	if(dpc_elf) {
+	if(isPXE) {
 		printf("	lda #((>scoredata))\n");
 	} else {
 		printf("	lda #((>scoredata) & $0f)\n");
@@ -3551,7 +3551,7 @@ void doif(char **statement)
 	    {
 		printf("	lda #<C_function\n");
 		printf("	sta DF0LOW\n");
-		if(dpc_elf) {
+		if(isPXE) {
 			printf("	lda #(>C_function)\n");
 		} else {
 			printf("	lda #(>C_function) & $0F\n");
@@ -4286,17 +4286,24 @@ int isoperator(char op)
 
 void displayoperation(char *opcode, char *operand, int index)
 {
-    if (!strncmp(operand, "stackpull\0", 9))
+	
+	if (!strncmp(operand, "stackpull\0", 9))
     {
+	const char* base = "$00";
+	if(isPXE)
+	{
+		// PXE maps stack and zero pages to separate RAM and must use absolute addressing when indexing into the stack
+		base = "$0100";
+	}
 	if (opcode[0] == '-')
 	{
 	    // operands swapped 
 	    printf("	TAY\n");
 	    printf("	PLA\n");
 	    printf("	TSX\n");
-	    printf("	STY $00,x\n");
+	    printf("	STY %s,x\n", base);
 	    printf("	SEC\n");
-	    printf("	SBC $00,x\n");
+	    printf("	SBC %s,x\n", base);
 	}
 	else if (opcode[0] == '/')
 	{
@@ -4309,7 +4316,7 @@ void displayoperation(char *opcode, char *operand, int index)
 	    printf("	TSX\n");
 	    printf("	INX\n");
 	    printf("	TXS\n");
-	    printf("	%s $00,x\n", opcode + 1);
+	    printf("	%s %s,x\n", opcode + 1, base);
 	}
     }
     else
@@ -5185,10 +5192,10 @@ void dolet(char **cstatement)
 void dogoto(char **statement)
 {
     int anotherbank = 0;
-    if (!dpc_elf && !strncmp(statement[3], "bank", 4))
+    if (!isPXE && !strncmp(statement[3], "bank", 4))
     {
 		anotherbank = (int) (statement[3][4]) - '0';
-		if (!dpc_elf && (statement[3][5] >= '0') && (statement[3][5] <= '9'))
+		if (!isPXE && (statement[3][5] >= '0') && (statement[3][5] <= '9'))
 			anotherbank = (int) (statement[3][5]) - 38;
     }
     else
@@ -5223,7 +5230,7 @@ void gosub(char **statement)
     // fprintf(stderr,"Max. nested gosubs exceeded in line %s\n",statement[0]);
     // exit(1);
     //}
-    if (!dpc_elf && !strncmp(statement[3], "bank", 4))
+    if (!isPXE && !strncmp(statement[3], "bank", 4))
     {
 		anotherbank = (int) (statement[3][4]) - '0';
 		if ((statement[3][5] >= '0') && (statement[3][5] <= '9'))
@@ -5483,7 +5490,7 @@ void set(char **statement)
 	{
 		multisprite = 2;
 		strcpy(redefined_variables[numredefvars++], "multisprite = 2");
-		dpc_elf = 1;
+		isPXE = 1;
 		strcpy(redefined_variables[numredefvars++], "PXE = 1");
 		create_includes("PXE.inc");
 	    bs = 28;

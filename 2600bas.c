@@ -12,7 +12,7 @@
 extern int bank;
 
 extern int bs;
-extern int dpc_elf;
+extern int isPXE;
 extern int numconstants;
 extern int playfield_index[];
 
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
 
     printf(" if ECHOFIRST\n");
     if (bs == 28){
-        if(dpc_elf)
+        if(isPXE)
             printf("       echo \"    \",[(end_of_address_space - *)]d , \"bytes of ROM space left");
         else
             printf("       echo \"    \",[(DPC_graphics_end - *)]d , \"bytes of ROM space left");
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 	printf(" in bank 2");
     if (bs == 16)
 	printf(" in bank 4");
-    if (bs == 28 & !dpc_elf)
+    if (bs == 28 & !isPXE)
 	printf(" in graphics bank");
     if (bs == 32)
 	printf(" in bank 8");
