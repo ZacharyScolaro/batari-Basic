@@ -11,7 +11,7 @@ hex = 8
 
 ; feel free to modify the score graphics - just keep each digit 8 high
 ; and keep the conditional compilation stuff intact
- ifnconst DPCplusELF
+ ifnconst PXE
  ifconst ROM2k
    ORG $F7AC-8
  else
@@ -179,7 +179,7 @@ scoretable
 
  endif
 
- ifnconst DPCplusELF
+ ifnconst PXE
  ifconst ROM2k
    ORG $F7FC
  else

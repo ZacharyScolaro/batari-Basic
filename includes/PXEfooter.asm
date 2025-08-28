@@ -6,9 +6,13 @@ end_of_address_space
  .word (start & $ffff)
  .word (start & $ffff)
 
- incbin "DpcPlusELF-post.arm"
+ incbin "PXE-post.arm"
 
     SEG.U
+    rorg $000e
+Paddle0 ds 1
+Paddle1 ds 1
+
     rorg $002d
 Score_Background_Color ds 1
 

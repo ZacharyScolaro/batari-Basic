@@ -5484,8 +5484,8 @@ void set(char **statement)
 		multisprite = 2;
 		strcpy(redefined_variables[numredefvars++], "multisprite = 2");
 		dpc_elf = 1;
-		strcpy(redefined_variables[numredefvars++], "DPCplusELF = 1");
-		create_includes("DPCplusELF.inc");
+		strcpy(redefined_variables[numredefvars++], "PXE = 1");
+		create_includes("PXE.inc");
 	    bs = 28;
 		strcpy(redefined_variables[numredefvars++], "bankswitch_hotspot = $1FF6");
 	    strcpy(redefined_variables[numredefvars++], "bankswitch = 28");

@@ -7,15 +7,15 @@
 
 
 ; header file
-DPCplusELFheader.asm
+PXEheader.asm
 
 
 
-; DPC startup routine
-DPCplusELFstartup.asm
+; PXE startup routine
+PXEstartup.asm
 
-; DPC+ kernel lives in first bank
-DPCplusELF_kernel.asm
+; PXE kernel
+PXE_kernel.asm
 
 ; The overscan routine goes below.  it sets up sprites for the std_kernel.
 ; if you have any routines that will not run until the overscan period,
@@ -37,4 +37,4 @@ bB2.asm
 ; score graphics
 score_graphics.asm
 
-DPCplusELFfooter.asm
+PXEfooter.asm

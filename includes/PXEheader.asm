@@ -5,11 +5,11 @@
  include "vcs.h"
  include "macro.h"
  include "DPCplus.h"
- include "DPCplusELFbB.h"
+ include "PXEbB.h"
  include "2600basic_variable_redefs.h"
 
      ORG $0000
- incbin "DpcPlusELF-pre.arm"
+ incbin "PXE-pre.arm"
 
 ROM_START = .
 
@@ -94,6 +94,8 @@ ROM_START = .
     .byte >PF1L
     .byte <simple48
     .byte >simple48
+    .byte <PaddleRange0
+    .byte >PaddleRange0
     .byte <miniKernel0type
     .byte >miniKernel0type
     .byte <miniKernelCount
@@ -175,8 +177,8 @@ PALETTE ; the Initial NTSC or PAL palette is copied to this RAM location at boot
 PF_MODE ; cbfo vpww
     .byte $00
 
-    ; 0-31 Which playfield column write operations will start with 
-    ; when writing multiple columns the operation will wrap back to column 0 after column 31
+    ; 0-14 Which playfield column write operations will start with 
+    ; when writing multiple columns the operation will wrap back to column 0 after column 14
 PF_WRITE_INDEX 
     .byte $00
 
@@ -345,6 +347,17 @@ PF_VER_SCROLL_HI_BKCOL
 
 ; Simple 48 Pixel Mode
 simple48 .byte 0 ; 0-Normal Multisprite kernel lines 0-179, 1-48 Pixel Sprite using backgroundcolor, playfieldcolor, and playfield data
+
+; PaddleRange set to 0 to disable, paddle value will be converted into a number between 0 and range inclusive.
+; Only 0 and 1 currently supported
+PaddleRange0:
+    .byte 00
+PaddleRange1:
+    .byte 00
+PaddleRange2:
+    .byte 00
+PaddleRange3:
+    .byte 00
 
 ; MiniKernels
 
