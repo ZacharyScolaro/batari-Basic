@@ -4289,21 +4289,20 @@ void displayoperation(char *opcode, char *operand, int index)
 	
 	if (!strncmp(operand, "stackpull\0", 9))
     {
-	const char* base = "$00";
+	int base = 0;
 	if(isPXE)
 	{
 		// PXE maps stack and zero pages to separate RAM and must use absolute addressing when indexing into the stack
-		base = "$0100";
+		base = 0x100;
 	}
 	if (opcode[0] == '-')
 	{
 	    // operands swapped 
-	    printf("	TAY\n");
-	    printf("	PLA\n");
 	    printf("	TSX\n");
-	    printf("	STY %s,x\n", base);
+	    printf("	STA $%x,x\n", base+1); // Add one to base to compensate for PLA below, SP must be less than $ff here
+	    printf("	PLA\n");
 	    printf("	SEC\n");
-	    printf("	SBC %s,x\n", base);
+	    printf("	SBC $%x,x\n", base);
 	}
 	else if (opcode[0] == '/')
 	{
@@ -4316,7 +4315,7 @@ void displayoperation(char *opcode, char *operand, int index)
 	    printf("	TSX\n");
 	    printf("	INX\n");
 	    printf("	TXS\n");
-	    printf("	%s %s,x\n", opcode + 1, base);
+	    printf("	%s $%x,x\n", opcode + 1, base);
 	}
     }
     else
