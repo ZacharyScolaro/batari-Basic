@@ -1464,7 +1464,19 @@ void printindex(char *mystatement, int myindex)
 	printf("%s\n", mystatement);
     }
     else
-	printf("%s,x\n", mystatement);	// indexed with x!
+	{
+		if(isPXE)
+		{
+			int skipSpaces = 0;
+			for(; mystatement[skipSpaces] == ' '; skipSpaces++)
+				;
+			printf("$10%s,x\n", &mystatement[skipSpaces]);	// indexed with x!
+		}
+		else
+		{
+			printf("%s,x\n", mystatement);	// indexed with x!
+		}
+	}
 }
 
 void loadindex(char *myindex)
@@ -4299,7 +4311,7 @@ void displayoperation(char *opcode, char *operand, int index)
 	{
 	    // operands swapped 
 	    printf("	TSX\n");
-	    printf("	STA $%x,x\n", base+1); // Add one to base to compensate for PLA below, SP must be less than $ff here
+	    printf("	STA $%x,x\n", base);
 	    printf("	PLA\n");
 	    printf("	SEC\n");
 	    printf("	SBC $%x,x\n", base);
