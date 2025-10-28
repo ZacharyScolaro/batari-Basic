@@ -1,0 +1,51 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+
+
+    - name: Install WASI SDK
+      uses: konsumer/install-wasi-sdk@v1
+      with:
+        version: "25"
+
+    - name: Install xmllint
+      run: sudo apt-get install dos2unix
+      
+    - name: Set Version
+      run: |
+        if [ ${{ vars.VERSION_SUFFIX }} ]; then
+          echo "-${{ vars.VERSION_SUFFIX }}-${{ github.run_number }}" >> release.dat
+        else
+          echo ".${{ github.run_number }}" >> release.dat
+        fi
+        sed -i ':a;N;$!ba;s/\n//g' release.dat
+        cat release.dat
+        echo "VERSION_STRING=$(cat release.dat)" >> $GITHUB_ENV
+
+    - name: Make Packages
+      run: ./makepackages.sh
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.VERSION_STRING }}.tar.gz
+        path: packages/*-wasm.tar.gz
+
+    - name: Upload zip Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.VERSION_STRING }}.zip
+        path: packages/*-wasm.zip
