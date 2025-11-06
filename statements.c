@@ -305,9 +305,9 @@ void bkcolors(char **statement)
 	    sprintf(sprite_data[sprite_index++], "	.byte %s", data);
 	    l++;
 	}
-	if (l > 255)
+	if (l > (isPXE ? 256 : 255))
 	    prerror("Error: too much data in bkcolors declaration\n");
-	printf("	LDA #%d\n", l);
+	printf("	LDA #%d\n", l&0xff);
 	printf("	STA PARAMETER\n");
 	printf("	LDA #1\n");
 	printf("	STA CALLFUNCTION\n");
@@ -475,7 +475,7 @@ void playfieldcolorandheight(char **statement)
 		sprintf(sprite_data[sprite_index++], "	.byte %s", data);
 		l++;
 	    }
-	    if (l > 255)
+	    if (l > (isPXE ? 256 : 255))
 		prerror("Error: too much data in pfcolor declaration\n");
 	    printf("	LDA #%d\n", l & 0xff);
 	    printf("	STA PARAMETER\n");
@@ -1573,16 +1573,13 @@ void printindex(char *mystatement, int myindex)
     }
     else
 	{
-		if(isPXE)
+		if(isPXE && atoi(mystatement)  == 1)
 		{
-			int skipSpaces = 0;
-			for(; mystatement[skipSpaces] == ' '; skipSpaces++)
-				;
-			printf("$10%s,x\n", &mystatement[skipSpaces]);	// indexed with x!
+			printf("$101,x\n");	// PXE needs to access stack at page 1
 		}
 		else
 		{
-			printf("%s,x\n", mystatement);	// indexed with x!
+		printf("%s,x\n", mystatement);	// indexed with x!
 		}
 	}
 }
