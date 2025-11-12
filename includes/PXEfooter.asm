@@ -40,3 +40,5 @@ pfscroll_right ds 1
 pfscroll_left ds 1
 pfscroll_down ds 1
 pfscroll_up ds 1
+write_savedata_0 ds 1
+write_savedata_1 ds 1

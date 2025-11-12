@@ -44,6 +44,7 @@ int kernel_options = 0;
 int pfcolorindexsave = 0;
 int pfcolornumber = 0;
 int isPXE = 0;
+int isSaveDataSet = 0;
 
 int pfdata[100][256];
 char sprite_data[5000][50];
@@ -3119,6 +3120,24 @@ void pfscroll(char **statement)
     jsr("pfscroll");
 }
 
+void writesavedata(char **statement)
+{
+	if(!isPXE)
+	{
+		prerror("writesavedata requires 'set kernel PXE'");
+	}
+	if (!strncmp(statement[2], "0\0", 1))
+	{
+		jsr("write_savedata_0");
+		return;
+	}
+	if (!strncmp(statement[2], "1\0", 1))
+	{
+		jsr("write_savedata_1");
+		return;
+	}
+}
+
 void doasm()
 {
     char data[200];
@@ -5814,7 +5833,24 @@ void set(char **statement)
     {
 	sprintf(redefined_variables[numredefvars++], "legacy = %d", (int) (100 * (atof(statement[3]))));
     }
-    else
+    else if (!strncmp(statement[2], "save_data\0", 9))
+    {
+		if(!isPXE)
+			prerror("set save_data: requires set kernel PXE");
+
+		int size0 = atoi(statement[3]);
+		int size1 = atoi(statement[4]);
+		if(size0 < 1 || 128 < size0 )
+			prerror("set save_data size0 size1 start_var0 start_var1: size0 must be non-zero and less than 128");
+		if(size1 < 1 || 128 < size1)
+			prerror("set save_data size0 size1 start_var0 start_var1: size1 must be non-zero and less than 128");
+		sprintf(redefined_variables[numredefvars++], "save_data0_size = %d", size0);
+		sprintf(redefined_variables[numredefvars++], "save_data1_size = %d", size1);
+		sprintf(redefined_variables[numredefvars++], "save_data0_var = %s", statement[5]);
+		sprintf(redefined_variables[numredefvars++], "save_data1_var = %s", statement[6]);
+		isSaveDataSet = 1;
+	}
+	else
 	prerror("set: unknown parameter\n");
 
 }
@@ -6106,6 +6142,14 @@ void header_write(FILE * header, char *filename)
 	fprintf(stderr, "Cannot open %s for writing\n", filename);
 	exit(1);
     }
+
+	if(isPXE && !isSaveDataSet)
+	{
+		sprintf(redefined_variables[numredefvars++], "save_data0_size = 0");
+		sprintf(redefined_variables[numredefvars++], "save_data1_size = 0");
+		sprintf(redefined_variables[numredefvars++], "save_data0_var = 0");
+		sprintf(redefined_variables[numredefvars++], "save_data1_var = 0");
+	}
 
     strcpy(redefined_variables[numredefvars],
 	   "; This file contains variable mapping and other information for the current project.\n");

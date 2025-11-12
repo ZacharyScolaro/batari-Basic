@@ -100,6 +100,13 @@ ROM_START = .
     .byte >miniKernel0type
     .byte <miniKernelCount
     .byte >miniKernelCount
+    .byte save_data0_size
+    .byte save_data1_size
+    .byte <save_data0_var
+    .byte >save_data0_var
+    .byte <save_data1_var
+    .byte >save_data1_var
+
 
     ; Initial NTSC Palette
      ORG $0600 + ROM_START

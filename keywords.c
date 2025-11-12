@@ -346,6 +346,8 @@ void keywords(char **cstatement)
 	    pfvline(statement);
 	else if (!strncmp(statement[1], "pfscroll", 9))
 	    pfscroll(statement);
+	else if (!strncmp(statement[1], "writesavedata", 14))
+	    writesavedata(statement);
 	else if (!strncmp(statement[1], "drawscreen", 10))
 	    drawscreen();
 	else if (!strncmp(statement[1], "rerand", 6))

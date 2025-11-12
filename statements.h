@@ -90,6 +90,7 @@ void pfpixel(char **);
 void pfhline(char **);
 void pfvline(char **);
 void pfscroll(char **);
+void writesavedata(char **);
 void player(char **);
 void drawscreen(void);
 void prerror (char *, ...);
