@@ -356,7 +356,6 @@ PF_VER_SCROLL_HI_BKCOL
 simple48 .byte 0 ; 0-Normal Multisprite kernel lines 0-179, 1-48 Pixel Sprite using backgroundcolor, playfieldcolor, and playfield data
 
 ; PaddleRange set to 0 to disable, paddle value will be converted into a number between 0 and range inclusive.
-; Only 0 and 1 currently supported
 PaddleRange0:
     .byte 00
 PaddleRange1:
