@@ -179,7 +179,7 @@ PALETTE ; the Initial NTSC or PAL palette is copied to this RAM location at boot
     ; ww: PF width. How many PF columns wide to scroll through horizontally. Each PF column is 8 PF pixels wide (32 pixels)
     ;   0: 4 columns with sides set to PF0. No horizontal scrolling. Primarily for backwards compatability with DPC+ kernel.
     ;   1: 5 columns. 160 (40 PF) Pixels wide. 
-    ;   2: 10 columns. 320 (80 PF) Pixels wide.
+    ;   2: 8 columns. 256 (64 PF) Pixels wide.
     ;   3: 15 columns. 480 (120 PF) Pixels wide.
 PF_MODE ; cbfo vpww
     .byte $00
