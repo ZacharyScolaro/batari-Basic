@@ -47,7 +47,7 @@ int isPXE = 0;
 int isSaveDataSet = 0;
 
 int pfdata[100][256];
-char sprite_data[5000][50];
+char sprite_data[50000][50];
 int playfield_index[50];
 char includespath[500];
 char redefined_variables[500][100];
