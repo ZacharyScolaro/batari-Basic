@@ -354,7 +354,7 @@ PF_VER_SCROLL_HI_BKCOL
 
 ; Simple 48 Pixel Mode
 simple48 .byte 0 ; 0-Normal Multisprite kernel lines 0-179, 1-48 Pixel Sprite using backgroundcolor, playfieldcolor, and playfield data
-                 ; 2 - no score shown at bottom. top kernel fills all 192 lines
+                 ; 2 - no score shown at bottom. top kernel fills all 188 lines
                  
 ; PaddleRange set to 0 to disable, paddle value will be converted into a number between 0 and range inclusive.
 PaddleRange0:
