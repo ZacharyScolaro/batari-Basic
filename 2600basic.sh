@@ -55,7 +55,7 @@ if [ "$2" = "-O" ]
    wasmtime run --dir=. --dir="$bB" "$bB/postprocess.wasm" -i "$bB" > "$1.asm"
 fi
 
-wasmtime run --dir=. --dir="$bB" "$bB/dasm.wasm" "$1.asm" -I"$bB/includes" -f3 -l"$1.lst" -p20 -s"$1.sym" -o"$1.bin" | wasmtime "$bB/bbfilter.wasm"
+wasmtime run --dir=. --dir="$bB" "$bB/dasm.wasm" "$1.asm" -I"$bB/includes" -I"$PWD" -f3 -v4 -R -l"$1.lst" -p20 -s"$1.sym" -o"$1.bin" | wasmtime "$bB/bbfilter.wasm"
 
 if [ -f "$bB/relocateBB.wasm" ] ; then
     wasmtime run --dir="$PWD" --dir=. --dir="$bB" "$bB"/relocateBB.wasm "$1.bin" 

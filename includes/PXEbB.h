@@ -54,7 +54,9 @@ player0color
 player0colorlo ds 1
 player0colorhi ds 1
 
+CEL_BOT_OFFSET_0
 player0height ds 1
+CEL_BOT_OFFSET_1
 player1height ds 1
 player2height ds 1
 player3height ds 1
@@ -247,9 +249,18 @@ var58 ds 1
 var59 ds 1
 var60 ds 1
 
-stack_reserved ds 10
-; echo "free ZP ram:",($100-*)d
- 
+; Variables for Sprites mode
+SPRITE_0 ds 1
+SPRITE_1 ds 16
+CEL_0 ds 1
+CEL_1 ds 16
+INK_0 ds 1
+INK_1 ds 16
+CEL_TOP_OFFSET_0 ds 1
+CEL_TOP_OFFSET_1 ds 16
+
+; echo "Available Stack ram:",($200-*)d
+
  SEG.U vars
  org $0300
  

@@ -106,6 +106,15 @@ ROM_START = .
     .byte >save_data0_var
     .byte <save_data1_var
     .byte >save_data1_var
+    .byte <SPRITE_0
+    .byte >SPRITE_0
+ ifconst ___SPRITE_DATA
+    .byte <___SPRITE_DATA
+    .byte >___SPRITE_DATA
+ else
+    .byte 0
+    .byte 0
+ endif
 
 
     ; Initial NTSC Palette
@@ -352,7 +361,8 @@ PF_VER_SCROLL_LO_BKCOL
 PF_VER_SCROLL_HI_BKCOL
     .byte $00
 
-; Simple 48 Pixel Mode
+; Graphics modes
+GFX_MODE
 simple48 .byte 0 ; 0-Normal Multisprite kernel lines 0-179, 1-48 Pixel Sprite using backgroundcolor, playfieldcolor, and playfield data
                  ; 2 - no score shown at bottom. top kernel fills all 188 lines
                  
