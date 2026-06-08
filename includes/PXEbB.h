@@ -2,7 +2,6 @@
 
  SEG.U vars
  org $30
-player0x ds 1
 topP1x ds 1
 missile0x ds 1
 missile1x ds 1
@@ -13,8 +12,8 @@ SpriteGfxIndex ds 9
 spritedisplay ds 1
 
 player0xcoll ds 1; to detect p0x colls
-NewSpriteX ds 1	;		X position
-player1x = NewSpriteX
+player0x ds 1
+player1x ds 1
 player2x ds 1
 player3x ds 1
 player4x ds 1
@@ -32,8 +31,7 @@ player15x ds 1
 player16x ds 1
 
 player0y ds 1
-NewSpriteY ds 1			;		Y position
-player1y = NewSpriteY
+player1y ds 1
 player2y ds 1
 player3y ds 1
 player4y ds 1
