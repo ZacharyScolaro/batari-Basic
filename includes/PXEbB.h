@@ -247,6 +247,12 @@ var58 ds 1
 var59 ds 1
 var60 ds 1
 
+ echo "Available ZP ram:",($100-*)d
+
+ SEG.U stack_vars
+ org $0100
+
+
 ; Variables for Sprites mode
 SPRITE_0 ds 1
 SPRITE_1 ds 16
@@ -257,7 +263,7 @@ INK_1 ds 16
 CEL_TOP_OFFSET_0 ds 1
 CEL_TOP_OFFSET_1 ds 16
 
-; echo "Available Stack ram:",($200-*)d
+ echo "Available Stack ram:",($200-*)d
 
  SEG.U vars
  org $0300
