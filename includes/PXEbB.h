@@ -247,6 +247,9 @@ var58 ds 1
 var59 ds 1
 var60 ds 1
 
+SIMPLE_48_START ds 1
+SIMPLE_48_END ds 1
+
  echo "Available ZP ram:",($100-*)d
 
  SEG.U stack_vars

@@ -115,6 +115,8 @@ ROM_START = .
     .byte 0
     .byte 0
  endif
+    .byte <SIMPLE_48_START
+    .byte >SIMPLE_48_START
 
 
     ; Initial NTSC Palette
