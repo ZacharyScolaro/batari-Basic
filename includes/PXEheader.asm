@@ -96,10 +96,6 @@ ROM_START = .
     .byte >simple48
     .byte <PaddleRange0
     .byte >PaddleRange0
-    .byte <miniKernel0type
-    .byte >miniKernel0type
-    .byte <miniKernelCount
-    .byte >miniKernelCount
     .byte save_data0_size
     .byte save_data1_size
     .byte <save_data0_var
@@ -115,8 +111,8 @@ ROM_START = .
     .byte 0
     .byte 0
  endif
-    .byte <SIMPLE_48_START
-    .byte >SIMPLE_48_START
+    .byte <KERNEL_START
+    .byte >KERNEL_START
 
 
     ; Initial NTSC Palette
@@ -378,48 +374,42 @@ PaddleRange2:
 PaddleRange3:
     .byte 00
 
-; MiniKernels
+; Stackable Kernels
 
-miniKernelCount .byte 0
+KERNEL_EMPTY = 0
 
-; Types
-mkMultiSprite = 0   ; player0Height graphicLo graphicHi colorLo colorHi nusiz0 player0x player0y
-mkScore = 1 ; paddingTop barLeft barRight digitsLeft digitsMiddle digitsRight colubk colupf   
-mk48Pixel = 2 ; paddingTop graphicLo graphicHi colorLo colorHi index graphicHeight
-     
-miniKernelId SET 0
- REPEAT 24
-miniKernel,miniKernelId,"type" .byte 0
-miniKernel,miniKernelId,"height"   .byte 0
-  ; arg 0
-miniKernel,miniKernelId,"paddingTop"
-miniKernel,miniKernelId,"player0Height" .byte 0
-  ; arg 1
-miniKernel,miniKernelId,"graphicLo"
-miniKernel,miniKernelId,"barLeft" .byte 0
-  ; arg 2
-miniKernel,miniKernelId,"graphicHi"
-miniKernel,miniKernelId,"barRight" .byte 0
-  ; arg3
-miniKernel,miniKernelId,"colorLo"
-miniKernel,miniKernelId,"digitsLeft" .byte 0
-  ; arg 4
-miniKernel,miniKernelId,"colorHi"
-miniKernel,miniKernelId,"digitsMiddle" .byte 0
-  ; arg 5
-miniKernel,miniKernelId,"nusiz0"
-miniKernel,miniKernelId,"index"
-miniKernel,miniKernelId,"digitsRight" .byte 0
-  ; arg 6
-miniKernel,miniKernelId,"player0x"
-miniKernel,miniKernelId,"graphicHeight"
-miniKernel,miniKernelId,"colubk" .byte 0
-  ; arg 7
-miniKernel,miniKernelId,"player0y"
-miniKernel,miniKernelId,"colupf" .byte 0
+; SPRITES preamble 5, image N-6, postamble 1, total N lines
+KERNEL_SPRITES = 1
 
-miniKernelId SET miniKernelId+1
- REPEND     
+; SCORE preamble 2, font 8, postamble 1, total 11 lines
+KERNEL_SCORE = 2
+
+; 48 PIXEL preamble 1, image N-1, postamble 0, total N lines
+KERNEL_48_PIXEL = 3
+
+; 98 PIXEL preamble 1, image N-1, postamble 0, total N lines
+KERNEL_98_PIXEL = 4
+
+; The index of the top kernel. (0 based indexing)
+KERNEL_START:
+    .byte $00
+; The index of the active parameter set.
+; All bB commands will target this set.
+KERNEL_PARAM_SET:
+    .byte $00
+
+; Which kernel to draw 
+KERNEL_TYPES:
+ HEX 01 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+
+; Total lines drawn including preamble and postamble
+; Default to 186 lines of Sprites followed by 10 lines of score
+KERNEL_HEIGHTS:
+ HEX ba 0a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+
+; Which copy of local kernel parameters to use
+KERNEL_PARAM_SETS:
+ HEX 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 
 
      ORG $1080 + ROM_START
