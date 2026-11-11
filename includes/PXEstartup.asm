@@ -21,7 +21,6 @@ clearmem
  bne clearmem
  sty temp1
  ldx #8
- stx playfieldpos
  stx FASTFETCH
  ldx #15
  lda #224
@@ -33,7 +32,6 @@ inityloop
 
  lda #1
  sta CTRLPF
- lda INTIM
  sta RWRITE0
  lda #0
  STA DF0FRACINC

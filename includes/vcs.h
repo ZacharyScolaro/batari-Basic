@@ -175,8 +175,6 @@ INTIM       ds 1    ; $284		Timer output
 
 TIMINT  	ds 1	; $285
 
-SWCHA2		ds 1	; $286		Used by PXE for Quadtari support
-
 ; Unused/undefined registers ($287-$294)
 			ds 1	; $287
 			ds 1	; $288
@@ -188,11 +186,6 @@ SWCHA2		ds 1	; $286		Used by PXE for Quadtari support
 			ds 1	; $28E
 			ds 1	; $28F
 
-; Used by PXE to make "on JOYx_DIR gosub" faster and smaller
-JOY0_DIR	ds 1	; $290
-JOY1_DIR	ds 1	; $291
-JOY2_DIR	ds 1	; $292
-JOY3_DIR	ds 1	; $293
 
 TIM1T       ds 1    ; $294		set 1 clock interval
 TIM8T       ds 1    ; $295      set 8 clock interval
