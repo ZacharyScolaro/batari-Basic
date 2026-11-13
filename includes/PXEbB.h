@@ -297,7 +297,6 @@ Y ds 1
 y = Y
 Z ds 1
 z = Z
-
 var0 ds 1
 var1 ds 1
 var2 ds 1
