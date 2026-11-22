@@ -526,6 +526,6 @@ P1HMP = JUMPTABLEHI + 12
 P1SKIP = P1HMP + 13
 NUSIZREFP = P1SKIP + 12
 scoredata = NUSIZREFP + 12
-BKCOLS = scoredata + 96
+BKCOLS = scoredata + 128
 STACKbegin = BKCOLS + 256
 USERSTACK = STACKbegin + 256 ; stack starts here and goes down!!!!

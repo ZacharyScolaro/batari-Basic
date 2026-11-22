@@ -25,6 +25,8 @@ ROM_START = .
     .byte >drawscreen
     .byte <end_drawscreen
     .byte >end_drawscreen
+    .byte <scoretable
+    .byte >scoretable
     .byte <scoredata
     .byte >scoredata
     .byte <BKCOLS
