@@ -129,7 +129,7 @@ KERNEL_TYPES:
 ; Total lines drawn including preamble and postamble
 ; Default to 186 lines of Sprites followed by 10 lines of score
 KERNEL_HEIGHTS:
- HEX ba 0a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+ HEX b6 0a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
 
 ; Which copy of local kernel parameters to use
 KERNEL_PARAM_SETS:
