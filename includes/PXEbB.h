@@ -186,14 +186,13 @@ PF_MODE ds 1 ; cbfo vpww
 
     ; 0-14 Which playfield column write operations will start with 
     ; when writing multiple columns the operation will wrap back to column 0 after column 14
-PF_WRITE_INDEX 
-    .byte $00
+PF_WRITE_INDEX ds 1
+CTRLPF      ds 1
 
-  SEG.U TIA_REGISTERS_WRITE
-  ORG $0070
+  ; TIA_REGISTERS_WRITE
 
 
-CTRLPF      ds 1    ; $70    
+
 AUDC0       ds 1    ; $71   0000 xxxx   Audio Control 0
 AUDC1       ds 1    ; $72   0000 xxxx   Audio Control 1
 AUDF0       ds 1    ; $73   000x xxxx   Audio Frequency 0
@@ -213,8 +212,7 @@ JOY3_DIR	ds 1	; $7F
 
 ;-------------------------------------------------------------------------------
 
-  SEG.U TIA_REGISTERS_READ
-  ORG $0080
+  ; TIA_REGISTERS_READ
 
 ;											bit 7   bit 6
 CXM0P       ds 1    ; $70       xx00 0000       Read Collision  M0-P1   M0-P0
@@ -234,8 +232,7 @@ INPT5       ds 1	; $7D		x000 0000       Read Input (Trigger) 1
 INPT6       ds 1    ; $7E		x000 0000       Read Input (Trigger) 2
 INPT7       ds 1	; $7F		x000 0000       Read Input (Trigger) 3
 
- SEG.U SHARED_VARS
- org $0090
+; SHARED_VARS
 
 temp1 ds 1
 temp2 ds 1
