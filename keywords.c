@@ -373,6 +373,16 @@ void keywords(char **cstatement)
 	    playfieldcolorandheight(statement);
 	else if (!strncasecmp(statement[1], "bkcolors:", 9))
 	    bkcolors(statement);
+	else if (!strncasecmp(statement[1], "pfscoreleftcolors:", 17))
+	    pfscorecolors(statement, 8);
+	else if (!strncasecmp(statement[1], "pfscorebkcolors:", 15))
+	    pfscorecolors(statement, 10);
+	else if (!strncasecmp(statement[1], "pfscorerightcolors:", 18))
+	    pfscorecolors(statement, 8);
+	else if (!strncmp(statement[1], "pfscoreleft:", 11))
+	    pfscoreleft(statement);
+	else if (!strncmp(statement[1], "pfscoreright:", 12))
+	    pfscoreright(statement);
 	else if (!strncmp(statement[1], "playfield:", 10))
 	    playfield(statement);
 	else if (!strncmp(statement[1], "scorecolors:", 12))
@@ -461,7 +471,7 @@ void keywords(char **cstatement)
 				(statement[0][lastc - 2] == 'h') &&
 				(statement[0][lastc - 1] == 'e') && (statement[0][lastc - 0] == 'n')))
 		return;
-	    sprintf(errorcode, "Error: Unknown keyword: %s\n", statement[1]);
+	    sprintf(errorcode, "Error: Unknown keyword -4: %s\n", statement[1]);
 	    prerror(&errorcode[0]);
 	    exit(1);
 	}

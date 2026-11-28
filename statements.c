@@ -321,6 +321,184 @@ void bkcolors(char **statement)
     }
 }
 
+void pfscorecolors(char **statement, int count)
+{
+    char data[200];
+    char label[200];
+    int l = 0;
+
+	if(!isPXE)
+	{
+		prerror("Error: %s only works in PXE kernels\n", statement[1]);
+		exit(1);
+	}
+
+	sprintf(label, "pfscoredata%s\n", statement[0]);
+	removeCR(label);
+
+	printf("	LDA #<%s\n", label);
+	printf("	LDX #>%s\n", label);
+	printf("	JSR setup%s\n", statement[1]);
+	
+
+	sprintf(sprite_data[sprite_index++], "%s\n", label);
+	while (1)
+	{
+	    if (((!fgets(data, 200, stdin))
+		 || ((data[0] < (unsigned char) 0x3A) && (data[0] > (unsigned char) 0x2F))) && (data[0] != 'e'))
+	    {
+			prerror("Error: Missing \"end\" keyword at end of %s declaration\n", statement[1]);
+			exit(1);
+	    }
+	    line++;
+	    if (!strncmp(data, "end\0", 3))
+		break;
+	    sprintf(sprite_data[sprite_index++], "	.byte %s", data);
+	    l++;
+	}
+	if (l != count)
+    {
+	    prerror("Error: %s must have exactly %d values\n", statement[1], count);
+		exit(1);
+    }
+}
+
+
+void pfscoreleft(char **statement)
+{
+    char zero = '.';
+    char one = 'X';
+    int i, j, k, l = 0;
+    char data[300];
+    char pframdata[256][200];
+    if ((unsigned char) statement[2][0] > (unsigned char) 0x20)
+	zero = statement[2][0];
+    if ((unsigned char) statement[3][0] > (unsigned char) 0x20)
+	one = statement[3][0];
+
+// read data until we get an end
+// stored in global var and output at end of code  
+
+    while (1)
+    {
+	if ((!fgets(data, sizeof(data), stdin)) || ((data[0] != zero) && (data[0] != one) && (data[0] != 'e')))
+	{
+	    prerror("Error: Missing \"end\" keyword at end of %s declaration\n", statement[1]);
+	    exit(1);
+	}
+	line++;
+	if (!strncmp(data, "end\0", 3))
+	break;
+    strcpy(pframdata[l++], data);
+    }
+	if (l != 8)
+    {
+	    prerror("Error: %s must have exactly 8 values\n", statement[1]);
+		exit(1);
+    }
+
+	playfield_number++;
+	printf("	LDA #<PF_data%d\n", playfield_number);
+	    printf("	LDX #>PF_data%d\n", playfield_number);
+		printf(" jsr setuppfscoreleft\n");
+
+
+
+
+	// use sprite data recorder for pf data
+	sprintf(sprite_data[sprite_index++], "PF_data%d\n", playfield_number);
+	for (i = 0; i < 8; ++i)	// stored right side up
+	{
+		sprintf(data, "	.byte %%");
+		for (k = 0; k < 4; ++k)
+		if (pframdata[i][k] == one)
+			strcat(data, "1");
+		else
+			strcat(data, "0");
+		strcat(data, "\n");
+		strcpy(sprite_data[sprite_index++], data);
+	}
+	for (i = 0; i < 8; ++i)	// stored right side up
+	{
+		sprintf(data, "	.byte %%");
+		for (k = 4; k < 12; ++k)
+		if (pframdata[i][k] == one)
+			strcat(data, "1");
+		else
+			strcat(data, "0");
+		strcat(data, "\n");
+		strcpy(sprite_data[sprite_index++], data);
+	}
+}
+
+void pfscoreright(char **statement)
+{
+    char zero = '.';
+    char one = 'X';
+    int i, j, k, l = 0;
+    char data[300];
+    char pframdata[256][200];
+    if ((unsigned char) statement[2][0] > (unsigned char) 0x20)
+	zero = statement[2][0];
+    if ((unsigned char) statement[3][0] > (unsigned char) 0x20)
+	one = statement[3][0];
+
+// read data until we get an end
+// stored in global var and output at end of code  
+
+    while (1)
+    {
+	if ((!fgets(data, sizeof(data), stdin)) || ((data[0] != zero) && (data[0] != one) && (data[0] != 'e')))
+	{
+	    prerror("Error: Missing \"end\" keyword at end of %s declaration\n", statement[1]);
+	    exit(1);
+	}
+	line++;
+	if (!strncmp(data, "end\0", 3))
+	break;
+    strcpy(pframdata[l++], data);
+    }
+	if (l != 8)
+    {
+	    prerror("Error: %s must have exactly 8 values\n", statement[1]);
+		exit(1);
+    }
+
+	playfield_number++;
+	printf("	LDA #<PF_data%d\n", playfield_number);
+	    printf("	LDX #>PF_data%d\n", playfield_number);
+		printf(" jsr setuppfscoreright\n");
+
+
+
+
+	// use sprite data recorder for pf data
+	sprintf(sprite_data[sprite_index++], "PF_data%d\n", playfield_number);
+	for (i = 0; i < 8; ++i)	// stored right side up
+	{
+		sprintf(data, "	.byte %%");
+		for (k = 0; k < 8; ++k)
+		if (pframdata[i][k] == one)
+			strcat(data, "1");
+		else
+			strcat(data, "0");
+		strcat(data, "\n");
+		strcpy(sprite_data[sprite_index++], data);
+	}
+	for (i = 0; i < 8; ++i)	// stored right side up
+	{
+		sprintf(data, "	.byte %%");
+		for (k = 8; k < 12; ++k)
+		if (pframdata[i][k] == one)
+			strcat(data, "1");
+		else
+			strcat(data, "0");
+		strcat(data, "0000\n");
+		strcpy(sprite_data[sprite_index++], data);
+	}
+}
+
+
 void playfieldcolorandheight(char **statement)
 {
     char data[200];
@@ -6161,3 +6339,4 @@ void header_write(FILE * header, char *filename)
     fclose(header);
 
 }
+

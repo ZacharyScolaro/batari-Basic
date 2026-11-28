@@ -116,6 +116,8 @@ int linenumber=1;
 <playercolor_mcomment>. ;
 
 "playfield:" {printf("%s",yytext);BEGIN(pffirstline);}
+"pfscoreleft:" {printf("%s",yytext);BEGIN(pffirstline);}
+"pfscoreright:" {printf("%s",yytext);BEGIN(pffirstline);}
 
 <pffirstline>[ \t]+ printf(" ");
 <pffirstline>"\n" {linenumber++;printf("\n");BEGIN(playfield);}

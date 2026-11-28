@@ -44,3 +44,8 @@ pfscroll_down ds 1
 pfscroll_up ds 1
 write_savedata_0 ds 1
 write_savedata_1 ds 1
+setuppfscorebkcolors ds 1
+setuppfscoreleftcolors ds 1
+setuppfscorerightcolors ds 1
+setuppfscoreleft ds 1
+setuppfscoreright ds 1
